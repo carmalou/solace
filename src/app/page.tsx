@@ -2,19 +2,38 @@
 
 import { useEffect, useState } from "react";
 
+type Advocate = {
+  firstName: string;
+  lastName: string;
+  city: string;
+  degree: string;
+  specialties: string[];
+  yearsOfExperience: number;
+  phoneNumber: number;
+};
+
 export default function Home() {
-  const [advocates, setAdvocates] = useState([]);
-  const [filteredAdvocates, setFilteredAdvocates] = useState([]);
+  const [pageNumber, setPageNumber] = useState(1);
+
+  const handlePrevClick = () => setPageNumber((prev) => Math.max(prev - 1, 1));
+  const handleNextClick = () => setPageNumber((prev) => prev + 1);
+
+  const [advocates, setAdvocates] = useState<Advocate[]>([]);
+  const [filteredAdvocates, setFilteredAdvocates] = useState<Advocate[]>([]);
+
+  const [pagination, setPagination] = useState({});
 
   useEffect(() => {
     console.log("fetching advocates...");
-    fetch("/api/advocates").then((response) => {
+    fetch(`/api/advocates?page=${pageNumber}`).then((response) => {
       response.json().then((jsonResponse) => {
+        console.log(jsonResponse);
         setAdvocates(jsonResponse.data);
         setFilteredAdvocates(jsonResponse.data);
+        setPagination(jsonResponse.pagination);
       });
     });
-  }, []);
+  }, [pageNumber]);
 
   const onChange = (e) => {
     const searchTerm = e.target.value;
@@ -28,8 +47,8 @@ export default function Home() {
         advocate.lastName.includes(searchTerm) ||
         advocate.city.includes(searchTerm) ||
         advocate.degree.includes(searchTerm) ||
-        advocate.specialties.includes(searchTerm) ||
-        advocate.yearsOfExperience.includes(searchTerm)
+        advocate.specialties.includes(searchTerm)
+        // || advocate.yearsOfExperience.includes(searchTerm)
       );
     });
 
@@ -86,6 +105,20 @@ export default function Home() {
           })}
         </tbody>
       </table>
+      <div>
+        <button
+          disabled={!pagination.hasPrevPage}
+          onClick={() => handlePrevClick()}
+        >
+          Prev
+        </button>
+        <button
+          disabled={!pagination.hasNextPage}
+          onClick={() => handleNextClick()}
+        >
+          Next
+        </button>
+      </div>
     </main>
   );
 }

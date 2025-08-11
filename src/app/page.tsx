@@ -22,7 +22,13 @@ export default function Home() {
 
   const [advocates, setAdvocates] = useState<Advocate[]>([]);
 
-  const [pagination, setPagination] = useState({});
+  const [pagination, setPagination] = useState<{
+    hasPrevPage: boolean;
+    hasNextPage: boolean;
+  }>({
+    hasPrevPage: false,
+    hasNextPage: false,
+  });
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -45,7 +51,7 @@ export default function Home() {
     });
   }, [pageNumber, debouncedSearchTerm]);
 
-  const onChange = (e) => {
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };
 
@@ -66,9 +72,8 @@ export default function Home() {
       <br />
       <br />
       <div>
-        <p>Search</p>
         <p>
-          Searching for: <span id="search-term"></span>
+          Find an advocate: <span id="search-term"></span>
         </p>
         <input
           style={{ border: "1px solid black" }}
@@ -79,46 +84,76 @@ export default function Home() {
       </div>
       <br />
       <br />
-      <table>
+      <table className="w-full text-left table-auto min-w-max">
         <thead>
-          <th>First Name</th>
-          <th>Last Name</th>
-          <th>City</th>
-          <th>Degree</th>
-          <th>Specialties</th>
-          <th>Years of Experience</th>
-          <th>Phone Number</th>
+          <tr>
+            <th className="p-4 border-b border-blue-gray-100 bg-blue-gray-50">
+              First Name
+            </th>
+            <th className="p-4 border-b border-blue-gray-100 bg-blue-gray-50">
+              Last Name
+            </th>
+            <th className="p-4 border-b border-blue-gray-100 bg-blue-gray-50">
+              City
+            </th>
+            <th className="p-4 border-b border-blue-gray-100 bg-blue-gray-50">
+              Degree
+            </th>
+            <th className="p-4 border-b border-blue-gray-100 bg-blue-gray-50">
+              Specialties
+            </th>
+            <th className="p-4 border-b border-blue-gray-100 bg-blue-gray-50">
+              Years of Experience
+            </th>
+            <th className="p-4 border-b border-blue-gray-100 bg-blue-gray-50">
+              Phone Number
+            </th>
+          </tr>
         </thead>
         <tbody>
-          {advocates.map((advocate) => {
+          {advocates.map((advocate, i) => {
             return (
-              <tr>
-                <td>{advocate.firstName}</td>
-                <td>{advocate.lastName}</td>
-                <td>{advocate.city}</td>
-                <td>{advocate.degree}</td>
-                <td>
-                  {advocate.specialties.map((s) => (
-                    <div>{s}</div>
+              <tr key={`advocate-${i}`}>
+                <td className="p-4 border-b border-blue-gray-50">
+                  {advocate.firstName}
+                </td>
+                <td className="p-4 border-b border-blue-gray-50">
+                  {advocate.lastName}
+                </td>
+                <td className="p-4 border-b border-blue-gray-50">
+                  {advocate.city}
+                </td>
+                <td className="p-4 border-b border-blue-gray-50">
+                  {advocate.degree}
+                </td>
+                <td className="p-4 border-b border-blue-gray-50">
+                  {advocate.specialties.slice(0, 3).map((s, i) => (
+                    <div key={`specialties-${i}`}>{s}</div>
                   ))}
                 </td>
-                <td>{advocate.yearsOfExperience}</td>
-                <td>{advocate.phoneNumber}</td>
+                <td className="p-4 border-b border-blue-gray-50">
+                  {advocate.yearsOfExperience}
+                </td>
+                <td className="p-4 border-b border-blue-gray-50">
+                  {advocate.phoneNumber}
+                </td>
               </tr>
             );
           })}
         </tbody>
       </table>
-      <div>
+      <div className="w-full flex justify-between pt-4">
         <button
           disabled={!pagination.hasPrevPage}
           onClick={() => handlePrevClick()}
+          className="py-1 px-4 rounded border border-blue-gray-200"
         >
           Prev
         </button>
         <button
           disabled={!pagination.hasNextPage}
           onClick={() => handleNextClick()}
+          className="py-1 px-4 rounded border border-blue-gray-200"
         >
           Next
         </button>
